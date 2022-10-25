@@ -1,0 +1,19 @@
+{
+  "name": "whatogift-server",
+  "version": "1.0.0",
+  "description": "What to gift server api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliqwamo/Whatogift-Server.git"
+  },
+  "author": "Elihu Chitrit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eliqwamo/Whatogift-Server/issues"
+  },
+  "homepage": "https://github.com/eliqwamo/Whatogift-Server#readme"
+}
