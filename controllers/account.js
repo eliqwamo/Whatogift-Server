@@ -123,6 +123,15 @@ router.post('/login', async(req,res) => {
     //Generate JWT token
     //Response
 })
+
+//Update account
+router.put('/update_account', async(req,res) => {})
+//Update password
+router.put('/update_password', async(req,res) => {
+    //Get current password
+    //Get new password
+})
+
 router.get('/getOverview', async(req,res) => {
 
 })
