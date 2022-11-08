@@ -13,6 +13,9 @@ const mongoUrl = 'mongodb+srv://whatogift-user:JkqjBfxJpI3EdNcC@cluster0.evlpywq
 ///////////////////////////////ROUTES/////////////////////////////////
 import accountRoute from './controllers/account.js';
 app.use('/api/account', accountRoute);
+
+import companiesRoute from './controllers/company.js';
+app.use('/api/company', companiesRoute);
 //---------------------END OF ROUTES -----------------------------////
 
 
@@ -20,7 +23,6 @@ const port = 3001;
 
 mongoose.connect(mongoUrl)
 .then(results => {
-    console.log(results);
     app.listen(port, function(){
         console.log(`Server is running via port ${port}`);
     });
