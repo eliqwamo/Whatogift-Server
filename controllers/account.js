@@ -3,137 +3,146 @@ const router = express.Router();
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import Auth from './auth.js';
 
 //MODELS
 import Account from '../models/account.js';
 
-router.post('/signup', async(req,res) => {
+router.post('/signup', async (req, res) => {
     const id = mongoose.Types.ObjectId();
-    const {firstName, lastName, email, password} = req.body;
+    const { firstName, lastName, email, password } = req.body;
     //Check if user exist
-    Account.findOne({email:email})
-    .then(async account => {
-        if(account){
-            return res.status(200).json({
-                status: false,
-                message: 'Account not available'
-            });
-        } else {
-            const hash = await bcryptjs.hash(password, 10);
-            const code = generateRandomIntegerInRange(1111,9999);
-            const _account = new Account({
-                _id: id,
-                email: email,
-                password: hash,
-                firstName: firstName,
-                lastName: lastName,
-                passcode: code
-            })
-            _account.save()
-            .then(account_created => {
+    Account.findOne({ email: email })
+        .then(async account => {
+            if (account) {
                 return res.status(200).json({
-                    status: true,
-                    message: account_created
-                });
-            })
-            .catch(error => {
-                return res.status(500).json({
                     status: false,
-                    message: error.message
+                    message: 'Account not available'
                 });
-            })
-        }
-    })
-    .catch(error => {
-        return res.status(500).json({
-            status: false,
-            message: error.message
-        });
-    })
+            } else {
+                const hash = await bcryptjs.hash(password, 10);
+                const code = generateRandomIntegerInRange(1111, 9999);
+                const _account = new Account({
+                    _id: id,
+                    email: email,
+                    password: hash,
+                    firstName: firstName,
+                    lastName: lastName,
+                    passcode: code
+                })
+                _account.save()
+                    .then(account_created => {
+                        return res.status(200).json({
+                            status: true,
+                            message: account_created
+                        });
+                    })
+                    .catch(error => {
+                        return res.status(500).json({
+                            status: false,
+                            message: error.message
+                        });
+                    })
+            }
+        })
+        .catch(error => {
+            return res.status(500).json({
+                status: false,
+                message: error.message
+            });
+        })
     //Store user in db
     //Send verivication code
 })
-router.post('/verify', async(req,res) => {
+router.post('/verify', async (req, res) => {
     //Get code + email
-    const {email, code} = req.body;
+    const { email, code } = req.body;
     //Check if code match
-    Account.findOne({email:email})
-    .then(async account => {
-        if(parseInt(code) == parseInt(account.passcode)){
+    Account.findOne({ email: email })
+        .then(async account => {
+            if (parseInt(code) == parseInt(account.passcode)) {
 
-            account.isVerified = true;
-            account.save()
-            .then(account_updated => {
+                account.isVerified = true;
+                account.save()
+                    .then(account_updated => {
+                        return res.status(200).json({
+                            status: true,
+                            message: account_updated
+                        });
+                    })
+                    .catch(error => {
+                        return res.status(500).json({
+                            status: false,
+                            message: error.message
+                        });
+                    })
+            } else {
                 return res.status(200).json({
-                    status: true,
-                    message: account_updated
-                });
-            })
-            .catch(error => {
-                return res.status(500).json({
                     status: false,
-                    message: error.message
+                    message: 'Verify code not match'
                 });
-            })
-        } else {
-            return res.status(200).json({
+            }
+        })
+        .catch(error => {
+            return res.status(500).json({
                 status: false,
-                message: 'Verify code not match'
+                message: error.message
             });
-        }
-    })
-    .catch(error => {
-        return res.status(500).json({
-            status: false,
-            message: error.message
-        });
-    })
+        })
     //Update db false true
 })
-router.post('/login', async(req,res) => {
+router.post('/login', async (req, res) => {
     //Get user login data
-    const {email,password} = req.body;
+    const { email, password } = req.body;
     //Check if user exist and password match
-    Account.findOne({email:email})
-    .then(async account => {
-        const isMatch = await bcryptjs.compare(password, account.password);
-        if(isMatch && account.isVerified){
+    Account.findOne({ email: email })
+        .then(async account => {
+            if (account) {
+                const isMatch = await bcryptjs.compare(password, account.password);
+                if (isMatch && account.isVerified) {
+                    const data = { account };
+                    const token = await jwt.sign(data, 'zt43dFwBWT85abZwIGhNRaUlLs9zsQaH');
 
-            const data = {account};
-            const token = await jwt.sign(data, 'zt43dFwBWT85abZwIGhNRaUlLs9zsQaH');
-
-            return res.status(200).json({
-                status: true,
-                message: account,
-                token: token
-            });
-        } else {
-            return res.status(200).json({
+                    return res.status(200).json({
+                        status: true,
+                        message: account,
+                        token: token
+                    });
+                } else {
+                    return res.status(200).json({
+                        status: false,
+                        message: 'Username or password not match or account not verified'
+                    });
+                }
+            } else {
+                return res.status(200).json({
+                    status: false,
+                    message: 'Account not exist'
+                });
+            }
+        })
+        .catch(error => {
+            return res.status(500).json({
                 status: false,
-                message: 'Username or password not match or account not verified'
+                message: error.message
             });
-        }
-    })
-    .catch(error => {
-        return res.status(500).json({
-            status: false,
-            message: error.message
-        });
-    })
+        })
     //Generate JWT token
     //Response
 })
 
 //Update account
-router.put('/update_account', async(req,res) => {})
+router.put('/update_account', async (req, res) => { })
 //Update password
-router.put('/update_password', async(req,res) => {
+router.put('/update_password', async (req, res) => {
     //Get current password
     //Get new password
 })
 
-router.get('/getOverview', async(req,res) => {
-
+router.get('/getOverview', Auth, async (req, res) => {
+    return res.status(200).json({
+        message: `Hello ${req.user.firstName} ${req.user.lastName}`
+    });
 })
 
 
