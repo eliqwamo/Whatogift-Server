@@ -24,6 +24,7 @@ router.post('/signup', async (req, res) => {
                 const code = generateRandomIntegerInRange(1111, 9999);
                 const _account = new Account({
                     _id: id,
+                    associateId: id,
                     email: email,
                     password: hash,
                     firstName: firstName,

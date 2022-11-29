@@ -4,6 +4,21 @@ import Auth from './auth.js';
 import Company from '../models/company.js';
 import mongoose from 'mongoose';
 
+
+router.get('/get_companies', Auth, async(req,res) => {
+    Company.find()
+    .then(companies => {
+        return res.status(200).json({
+            message: companies
+        })
+    })
+    .catch(error => {
+        return res.status(500).json({
+            message: error.message
+        })
+    })
+})
+
 //Update account
 router.post('/create_company', Auth, async(req,res) => {
     const user = req.user;
