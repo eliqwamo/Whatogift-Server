@@ -2,6 +2,9 @@ import express from "express";
 import bp from 'body-parser';
 import mongoose from "mongoose";
 
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
+
 const app = express();
 
 app.use(bp.urlencoded({extended:false}));
@@ -9,6 +12,25 @@ app.use(bp.json());
 
 const mongoUrl = 'mongodb+srv://whatogift-user:JkqjBfxJpI3EdNcC@cluster0.evlpywq.mongodb.net/whatogiftdb?retryWrites=true&w=majority';
 
+
+const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Whatogift API Endpoints',
+            version: '1.0.0'
+        },
+        servers: [
+            {
+                url: 'http://localhost:3001'
+            }
+        ]
+    },
+    apis:['./controllers/*.js']
+}
+
+const swaggerSpec = swaggerJsdoc(options);
+app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(swaggerSpec));
 
 ///////////////////////////////ROUTES/////////////////////////////////
 import accountRoute from './controllers/account.js';
