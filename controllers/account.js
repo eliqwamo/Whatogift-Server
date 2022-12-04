@@ -8,6 +8,63 @@ import Auth from './auth.js';
 //MODELS
 import Account from '../models/account.js';
 
+/**
+ * @swagger
+ * definitions:
+ *  Login:
+ *   type: object
+ *   properties:
+ *    email:
+ *     type: string
+ *     example: eli@qwamo.com
+ *    password:
+ *     type: string
+ *     example: 123456
+ *  Register:
+ *   type: object
+ *   properties:
+ *    firstName:
+ *     type: string
+ *     example: Eli
+ *    lastName:
+ *     type: string
+ *     example: Chitrit
+ *    email:
+ *     type: string
+ *     example: eli@qwamo.com
+ *    password:
+ *     type: string
+ *     example: 123456
+ *  Verify:
+ *   type: object
+ *   properties:
+ *    email:
+ *     type: string
+ *     example: eli@qwamo.com
+ *    code:
+ *     type: int
+ *     example: 123456 
+ */
+
+
+/**
+ * @swagger
+ * /api/account/signup:
+ *  post:
+ *   summary: Create new account
+ *   tags: [Account]
+ *   description: Use this endpoint to create new account
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/Register'
+ *   responses: 
+ *    200:
+ *     description: Success
+ *    500:
+ *     description: Error
+ */
 router.post('/signup', async (req, res) => {
     const id = mongoose.Types.ObjectId();
     const { firstName, lastName, email, password } = req.body;
@@ -55,6 +112,25 @@ router.post('/signup', async (req, res) => {
     //Store user in db
     //Send verivication code
 })
+
+/**
+ * @swagger
+ * /api/account/verify:
+ *  post:
+ *   summary: Verify new account
+ *   tags: [Account]
+ *   description: Use this endpoint to verify new account
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/Verify'
+ *   responses: 
+ *    200:
+ *     description: Success
+ *    500:
+ *     description: Error
+ */
 router.post('/verify', async (req, res) => {
     //Get code + email
     const { email, code } = req.body;
@@ -92,6 +168,25 @@ router.post('/verify', async (req, res) => {
         })
     //Update db false true
 })
+
+/**
+ * @swagger
+ * /api/account/login:
+ *  post:
+ *   summary: Login
+ *   tags: [Account]
+ *   description: Use this endpoint to sign in
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/Login'
+ *   responses: 
+ *    200:
+ *     description: Success
+ *    500:
+ *     description: Error
+ */
 router.post('/login', async (req, res) => {
     //Get user login data
     const { email, password } = req.body;
@@ -131,6 +226,9 @@ router.post('/login', async (req, res) => {
     //Generate JWT token
     //Response
 })
+
+
+
 
 //Update account
 router.put('/update_account', async (req, res) => { })
