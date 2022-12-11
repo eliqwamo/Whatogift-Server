@@ -39,9 +39,19 @@ import { getDistance } from 'geolib';
  */
 router.post('/get_companies_by_location', Auth, async(req,res) => {
     const {latitude,longtitude} = req.body;
+
+
+    console.log(latitude);
+    console.log(longtitude);
+
+    
     Company.find()
     .then(companies => {
+
+
         let formattedCompanies = [];
+
+
         companies.forEach(company => {
             const distance = getDistance(
                 { latitude: latitude, longitude: longtitude },
@@ -54,6 +64,7 @@ router.post('/get_companies_by_location', Auth, async(req,res) => {
             formattedCompanies.push(_company);
         })
         return res.status(200).json({
+            status: true,
             message: formattedCompanies
         })
     })
