@@ -172,14 +172,18 @@ router.post('/create_new_category', async(req,res) => {
  *    500:
  *     description: Something is not working well
  */
-router.get('/get_all_products', async(req,res) => {
+router.get('/get_all_products', Auth, async(req,res) => {
+
+    console.log(req.body);
+
     Product.find()
     .then(products => {
         return res.status(200).json({
+            status: true,
             message: products
         })
     })
-    .catch(error => { return res.status(500).json({message: error.message})})
+    .catch(error => { return res.status(500).json({status: false, message: error.message})})
 })
 
 
