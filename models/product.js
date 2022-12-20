@@ -24,6 +24,22 @@ const productSchema = new Schema({
             title: String
         }
     ],
+    eventsTag:[
+        {
+            name: String
+        }
+    ],
+    interestTags:[
+        {
+            name: String
+        }
+    ],
+    ageTags:[
+        {
+            name: String
+        }
+    ],
+    genderTag: String,
     createdAt: { type: Date, default: Date.now }
 })
 

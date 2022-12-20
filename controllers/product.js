@@ -66,6 +66,52 @@ router.get('/get_brand_by_id/:id', async(req,res) => {
 /**
  * @swagger
  * definitions:
+ *  Product:
+ *   type: object
+ *   properties:
+ *    companyId:
+ *     type: string
+ *     example: string
+ *    categoryId:
+ *     type: string
+ *     example: string
+ *    brandId:
+ *     type: string
+ *     example: string
+ *    productName:
+ *     type: string
+ *     example: Product name
+ *    productImage:
+ *     type: string
+ *     example: image url
+ *    productPrice:
+ *     type: number
+ *     example: 119.90
+ *    productDescription:
+ *     type: string
+ *     example: The product description
+ *    unitInStock:
+ *     type: number
+ *     example: 100
+ *    eventsTag:
+ *     type: array
+ *     example: [{name: 'birthday'}]
+ *    interestTags:
+ *     type: array
+ *     example: [{name: 'music'}]
+ *    ageTags:
+ *     type: array
+ *     example: [{name: 0-10}]
+ *    genderTag:
+ *     type: string
+ *     example: female
+ *  Category:
+ *   type: object
+ *   properties:
+ *    categoryName:
+ *     type: string
+ *     description: The category name
+ *     example: Gadgets
  *  Brand:
  *   type: object
  *   properties:
@@ -140,7 +186,27 @@ router.get('/get_all_categories', async(req,res) => {
 })
 
 
-router.post('/create_new_category', async(req,res) => {
+
+
+/**
+ * @swagger
+ * /api/product/create_new_category:
+ *  post:
+ *   summary: Create new category
+ *   description: Use this endpoint to create a new category
+ *   tags: [Products]
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/Category'
+ *   responses:
+ *    200:
+ *     description: Category created
+ *    500:
+ *     description: Failure in created category
+ */
+router.post('/create_new_category', Auth, async(req,res) => {
     const categoryName = req.body.categoryName;
     const id = mongoose.Types.ObjectId();
     const _category = new Category({
@@ -154,6 +220,28 @@ router.post('/create_new_category', async(req,res) => {
     .catch(error => {return res.status(500).json({message: error.message})})
 })
 
+
+router.put('/update_category/:id', Auth, async(req,res) => {
+    const categoryName = req.body.categoryName;
+    const categoryId = req.params.id;
+    Category.findById(categoryId)
+    .then(category => {
+        category.categoryName = categoryName;
+        category.save()
+        .then(category_updated => {
+            return res.status(200).json({
+                status: true,
+                message: category_updated
+            })
+        })
+    })
+    .catch(error => {
+        return res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    })
+})
 
 /**
  * @swagger
@@ -173,10 +261,10 @@ router.post('/create_new_category', async(req,res) => {
  *     description: Something is not working well
  */
 router.get('/get_all_products', Auth, async(req,res) => {
-
-    console.log(req.body);
-
     Product.find()
+    .populate('companyId')
+    .populate('categoryId')
+    .populate('brandId')
     .then(products => {
         return res.status(200).json({
             status: true,
@@ -186,14 +274,36 @@ router.get('/get_all_products', Auth, async(req,res) => {
     .catch(error => { return res.status(500).json({status: false, message: error.message})})
 })
 
-
+/**
+ * @swagger
+ * /api/product/create_new_product:
+ *  post:
+ *   summary: Create new product
+ *   description: Use this endpoint to create a new product
+ *   tags: [Products]
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions/Product'
+ *   responses:
+ *    200:
+ *     description: Product created
+ *    500:
+ *     description: Failure in created product
+ */
 router.post('/create_new_product', async(req,res) => {
     const id = mongoose.Types.ObjectId();
     const {
         companyId,categoryId,brandId,
         productName,productPrice,productDescription,
-        unitInStock, productImage
+        unitInStock, productImage,eventsTag,interestTags,
+        ageTags, genderTag
     } = req.body;
+
+
+
+
     const _product = new Product({
         _id: id,
         companyId: companyId,
@@ -204,7 +314,11 @@ router.post('/create_new_product', async(req,res) => {
         productPrice: productPrice,
         productDescription: productDescription,
         unitInStock: unitInStock,
-        reviews: []
+        reviews: [],
+        eventsTag: eventsTag,
+        interestTags: interestTags,
+        ageTags: ageTags,
+        genderTag: genderTag
     });
     _product.save()
     .then(product_created => {
@@ -222,7 +336,47 @@ router.post('/create_new_product', async(req,res) => {
 
 
 router.delete('/delete_brand', Auth, async(req,res) => {})
-router.delete('/delete_category', Auth, async(req,res) => {})
+
+
+
+/**
+ * @swagger
+ * /api/product/delete_category/{id}:
+ *  delete:
+ *   summary: Remove category by id
+ *   tags: [Products]
+ *   parameters:
+ *    - in: path
+ *      name: id
+ *      schema:
+ *       type: string
+ *      required: true
+ *   responses:
+ *    200:
+ *     description: Success
+ *    500:
+ *     description: Something is not working well 
+ */
+router.delete('/delete_category/:id', Auth, async(req,res) => {
+    const categoryId = req.params.id;
+    Category.findByIdAndDelete(categoryId)
+    .then(deleted => {
+        return res.status(200).json({
+            status: true,
+            message: 'Category removed'
+        })
+    })
+    .catch(error => {
+        return res.status(500).json({
+            status: false,
+            message: error.message
+        })
+    })
+})
+
+
+
+
 router.delete('/delete_product', Auth, async(req,res) => {})
 
 
