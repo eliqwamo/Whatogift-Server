@@ -67,7 +67,7 @@ import Account from '../models/account.js';
  */
 router.post('/signup', async (req, res) => {
     const id = mongoose.Types.ObjectId();
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, uid } = req.body;
     //Check if user exist
     Account.findOne({ email: email })
         .then(async account => {
@@ -81,6 +81,7 @@ router.post('/signup', async (req, res) => {
                 const code = generateRandomIntegerInRange(1111, 9999);
                 const _account = new Account({
                     _id: id,
+                    uid: uid,
                     associateId: id,
                     email: email,
                     password: hash,
@@ -89,10 +90,15 @@ router.post('/signup', async (req, res) => {
                     passcode: code
                 })
                 _account.save()
-                    .then(account_created => {
+                    .then(async account_created => {
+
+                        const data = { account_created };
+                        const token = await jwt.sign(data, 'zt43dFwBWT85abZwIGhNRaUlLs9zsQaH');
+
                         return res.status(200).json({
                             status: true,
-                            message: account_created
+                            message: account_created,
+                            token: token
                         });
                     })
                     .catch(error => {
