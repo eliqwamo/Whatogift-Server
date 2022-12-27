@@ -260,7 +260,7 @@ router.put('/update_category/:id', Auth, async(req,res) => {
  *    500:
  *     description: Something is not working well
  */
-router.get('/get_all_products', Auth, async(req,res) => {
+router.post('/get_all_products', Auth, async(req,res) => {
     Product.find()
     .populate('companyId')
     .populate('categoryId')
