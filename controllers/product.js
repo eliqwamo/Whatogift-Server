@@ -5,7 +5,7 @@ import Auth from './auth.js';
 import Category from '../models/category.js';
 import Brand from '../models/brand.js';
 import Product from '../models/product.js';
-
+import { getDistance } from 'geolib';
 
 /**
  * @swagger
@@ -261,18 +261,51 @@ router.put('/update_category/:id', Auth, async(req,res) => {
  *     description: Something is not working well
  */
 router.post('/get_all_products', Auth, async(req,res) => {
-    console.log('TEEESTTTT');
+
+    console.log(req.body.latitude);
+    console.log(req.body.longitude);
+
     Product.find()
     .populate('companyId')
     .populate('categoryId')
     .populate('brandId')
     .then(products => {
+
+        let allGifts = [];
+        products.forEach(gift => {
+
+            const distance = getDistance(
+                { latitude: req.body.latitude, longitude: req.body.longitude },
+                { 
+                    latitude: gift.companyId.contact.latitude, 
+                    longitude: gift.companyId.contact.longitude 
+                }
+            );
+            const giftItem = {
+                gift: gift,
+                distance: distance
+            }
+
+            allGifts.push(giftItem);
+
+        });
+
+
+
         return res.status(200).json({
             status: true,
-            message: products
+            message: allGifts
         })
+
+
+
+
+
     })
     .catch(error => { return res.status(500).json({status: false, message: error.message})})
+
+
+
 })
 
 /**
