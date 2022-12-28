@@ -201,22 +201,14 @@ router.post('/login', async (req, res) => {
         .then(async account => {
             if (account) {
                 const isMatch = await bcryptjs.compare(password, account.password);
-                if (isMatch && account.isVerified) {
                     const data = { account };
                     const token = await jwt.sign(data, 'zt43dFwBWT85abZwIGhNRaUlLs9zsQaH');
-
 
                     return res.status(200).json({
                         status: true,
                         message: account,
                         token: token
                     });
-                } else {
-                    return res.status(200).json({
-                        status: false,
-                        message: 'Username or password not match or account not verified'
-                    });
-                }
             } else {
                 return res.status(200).json({
                     status: false,
@@ -233,8 +225,6 @@ router.post('/login', async (req, res) => {
     //Generate JWT token
     //Response
 })
-
-
 
 
 //Update account

@@ -261,6 +261,7 @@ router.put('/update_category/:id', Auth, async(req,res) => {
  *     description: Something is not working well
  */
 router.post('/get_all_products', Auth, async(req,res) => {
+    console.log('TEEESTTTT');
     Product.find()
     .populate('companyId')
     .populate('categoryId')
