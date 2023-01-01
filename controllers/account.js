@@ -196,14 +196,17 @@ router.post('/verify', async (req, res) => {
 router.post('/login', async (req, res) => {
     //Get user login data
     const { email, password } = req.body;
+    console.log(email);
     //Check if user exist and password match
     Account.findOne({ email: email })
         .then(async account => {
+            console.log(account);
             if (account) {
                 const isMatch = await bcryptjs.compare(password, account.password);
                     const data = { account };
                     const token = await jwt.sign(data, 'zt43dFwBWT85abZwIGhNRaUlLs9zsQaH');
 
+                    console.log(token);
                     return res.status(200).json({
                         status: true,
                         message: account,
