@@ -239,8 +239,10 @@ router.put('/update_password', async (req, res) => {
 })
 
 router.get('/getOverview', Auth, async (req, res) => {
+
     return res.status(200).json({
-        message: `Hello ${req.user.firstName} ${req.user.lastName}`
+        status: true,
+        message: req.user
     });
 })
 

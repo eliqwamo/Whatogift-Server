@@ -6,6 +6,7 @@ import Category from '../models/category.js';
 import Brand from '../models/brand.js';
 import Product from '../models/product.js';
 import { getDistance } from 'geolib';
+import Account from '../models/account.js';
 
 /**
  * @swagger
@@ -33,6 +34,52 @@ router.get('/get_all_brands', async(req,res) => {
     })
     .catch(error => { return res.status(500).json({message: error.message})})
 })
+
+
+
+
+router.post('/storeProductToFav', Auth, async(req,res) => {
+
+    const account = await Account.findById(req.user._id);
+    const productId = req.body.productId;
+    let favs = account.myfavs;
+
+    if (productId) {
+        const isExist = favs.filter(x => x.productId == productId);
+        if(isExist == 0){
+            const new_fav = {productId: productId};
+            favs.push(new_fav);
+            account.myfavs = favs;
+            account.save()
+            .then(product_store => {
+                return res.status(200).json({
+                    status: true,
+                    message: product_store
+                })
+            })
+            .catch(error => {
+                return res.status(500).json({
+                    status: false,
+                    message: error.message
+                })
+            })
+        } else {
+            return res.status(200).json({
+                status: false,
+                message: 'Product exist'
+            })
+        }
+    } else {
+        return res.status(500).json({
+            status: false,
+            message: 'Product id not found'
+        })
+    }
+
+
+})
+
+
 
 /**
  * @swagger
