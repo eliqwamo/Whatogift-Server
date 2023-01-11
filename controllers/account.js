@@ -239,11 +239,28 @@ router.put('/update_password', async (req, res) => {
 })
 
 router.get('/getOverview', Auth, async (req, res) => {
+    const user = req.user;
+    Account.findById(user._id)
+    .then(account => {
+        if(account){
+            return res.status(200).json({
+                status: true,
+                message: account
+            });
+        } else {
+            return res.status(200).json({
+                status: false,
+                message: 'Account not exist'
+            });
+        }
+    })
+    .catch(error => {
+        return res.status(500).json({
+            status: false,
+            message: error.message
+        });
+    })
 
-    return res.status(200).json({
-        status: true,
-        message: req.user
-    });
 })
 
 
